@@ -1,46 +1,43 @@
-import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View, TextInput, Button } from 'react-native';
 import React from 'react';
+
+import HomePage from './HomePage';
+import AddRecipe from './AddRecipe';
+import CheckRecipes from './CheckRecipes';
+
+import { NavigationContainer } from '@react-navigation/native';
+import {createNativeStackNavigator} from '@react-navigation/native-stack';
+
+const Stack = createNativeStackNavigator();
 
 export default function App() {
   const [text, onChangeText] = React.useState('');
   const [arr, updateArr] = React.useState([]);
 
   return (
-    <View style={styles.container}>
-      <Text>{arr}</Text>
-      <TextInput
-        style={styles.input}
-        onChangeText={onChangeText}
-        value={text}
-      />
-      <Button
-          title="Press me"
-          onPress={() => {
-            updateArr([
-              ...arr,
-              "\n" + text
-            ]);
-            onChangeText('');
+    <NavigationContainer>
+      <Stack.Navigator>
+        <Stack.Screen
+          name="Home"
+          component={HomePage}
+          options={{
+            title: "Home"
           }}
         />
-      <StatusBar style="auto" />
-    </View>
+        <Stack.Screen
+          name="AddRecipe"
+          component={AddRecipe}
+          options={{
+            title:"AddRecipe"
+          }}
+        />
+        <Stack.Screen
+          name="CheckRecipes"
+          component={CheckRecipes}
+          options={{
+            title:"CheckRecipes"
+          }}
+        />
+      </Stack.Navigator>
+    </NavigationContainer>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  input: {
-    width: 100,
-    height: 40,
-    margin: 12,
-    borderWidth: 1,
-    padding: 10,
-  }
-});
