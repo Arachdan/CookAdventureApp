@@ -6,32 +6,10 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import RecipeComponent from './RecipeComponent';
 
-/*
-    What to do:
-    Add a way to delete a saved recipe from a list of saved recipes and from AsyncStorage.
-*/
-
 export default function CheckRecipes( {navigation} ) {
     const [recipes, setRecipes] = React.useState([]);
 
     useEffect(() => {
-        /*
-        const getMyRecipe = async (key) => {
-            try {
-                const JSONval = await AsyncStorage.getItem(key);
-                const val = JSON.parse(JSONval);
-                
-                setRecipeTitle(val.title);
-                setRecipeIngredients(val.ingredients);
-                setRecipeText(val.recipe_text);
-            } catch (error) {
-                console.log(error);
-            }
-    
-            console.log('Reading: Done.');
-        }
-        */
-
         const getAllRecipes = async () => {
             try {
                 const val = await AsyncStorage.getItem('recipes');
