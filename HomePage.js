@@ -5,34 +5,7 @@ import React from 'react';
 
 import BreakLine from './BreakLine';
 
-import AsyncStorage from '@react-native-async-storage/async-storage';
-
 export default function HomePage( {navigation} ) {
-    const getMyRecipe= async () => {
-        try {
-            const JSONval = await AsyncStorage.getItem('key');
-            const val = JSON.parse(JSONval);
-            console.log(val);
-            console.log("Recipe title: " + val.title);
-            console.log("Needed ingredients: " + val.ingredients);
-            console.log("Detailed instructions: " + val.recipe_text);
-            console.log("Reading: Done.");
-        } catch (error) {
-            console.log(error);
-        }
-    }
-
-    const getRecipesList = async () => {
-      try {
-          const value = await AsyncStorage.getItem('titles_list');
-          if (value !== null) {
-            return value;
-          }
-        } catch (error) {
-          console.log(error);
-      }
-  }
-
     return (
         <View style={styles.container}>
             <Button
