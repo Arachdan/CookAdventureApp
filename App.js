@@ -3,6 +3,7 @@ import React from 'react';
 import HomePage from './HomePage';
 import AddRecipe from './AddRecipe';
 import CheckRecipes from './CheckRecipes';
+import CharacterProfile from './CharacterProfile';
 
 import { NavigationContainer } from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
@@ -35,6 +36,13 @@ export default function App() {
           component={CheckRecipes}
           options={{
             title:"CheckRecipes"
+          }}
+        />
+        <Stack.Screen
+          name="CharacterProfile"
+          component={CharacterProfile}
+          options={{
+            title: "Profile"
           }}
         />
       </Stack.Navigator>
