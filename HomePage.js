@@ -8,27 +8,27 @@ import BreakLine from './BreakLine';
 export default function HomePage( {navigation} ) {
     return (
         <View style={styles.container}>
-            <Button
-              title="Character Profile"
-              onPress={() =>
-                navigation.navigate("CharacterProfile")
-              }
-            />
-            <BreakLine/>
-            <Button
-              title="Add a recipe"
-              onPress={() =>
-                navigation.navigate("AddRecipe")
-              }
-            />
-            <BreakLine/>
-            <Button
-              title="Check recipes"
-              onPress={() => 
-                navigation.navigate("CheckRecipes")
-              }
-            />
-            <StatusBar/>
+          <Button
+            title="Character Profile"
+            onPress={() =>
+              navigation.navigate("CharacterProfile")
+            }
+          />
+          <BreakLine/>
+          <Button
+            title="Add a recipe"
+            onPress={() =>
+              navigation.navigate("AddRecipe")
+            }
+          />
+          <BreakLine/>
+          <Button
+            title="Check recipes"
+            onPress={() => 
+              navigation.navigate("CheckRecipes")
+            }
+          />
+          <StatusBar/>
         </View>
     );
 }

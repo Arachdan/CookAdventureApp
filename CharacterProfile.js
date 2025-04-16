@@ -2,13 +2,20 @@ import React from 'react';
 import { StyleSheet, View, TextInput, Text } from 'react-native';
 import BreakLine from './BreakLine';
 import ProgressBar from 'react-native-progress/Bar';
+import { connect } from 'react-redux';
 
-export default function CharacterProfile( {navigation} ) {
+function increaseExperiencePoints(num) {
+    return {
+        type: 'INCREASE_EXPERIENCE_POINTS',
+        data: num,
+    };
+}
+
+function CharacterProfile(props) {
     const [name, setName] = React.useState('Brave Cooking Adventurer');
     const [level, setLevel] = React.useState(1);
-    const [ownExperience, setOwnExperience] = React.useState(0);
     const [requiredExperience, setRequiredExperience] = React.useState(100);
-    const [progress, setProgress] = React.useState(ownExperience / requiredExperience);
+    const [progress, setProgress] = React.useState(props.experiencePoints / requiredExperience);
 
     return (
         <View style={styles.container}>
@@ -19,7 +26,7 @@ export default function CharacterProfile( {navigation} ) {
             <BreakLine/>
             <Text>CHARACTER'S LEVEL</Text>
             <Text>Level {level}</Text>
-            <Text>Experience Points: {ownExperience} / {requiredExperience}</Text>
+            <Text>Experience Points: {props.experiencePoints} / {requiredExperience}</Text>
             {
                 //Experiment with animation type of a progress bar. Just for fun (and learning).
             }
@@ -27,6 +34,14 @@ export default function CharacterProfile( {navigation} ) {
         </View>
     );
 }
+
+export const mapStateToProps = (state) => {
+    return {
+        experiencePoints: state.experiencePoints,
+    };
+};
+
+export default connect(mapStateToProps)(CharacterProfile);
 
 const styles = StyleSheet.create({
     container: {
