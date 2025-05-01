@@ -4,7 +4,10 @@ import React, { useEffect } from 'react';
 
 import BreakLine from './BreakLine';
 
-export default function RecipeComponent(props) {
+import { connect } from 'react-redux';
+import {increaseExperiencePoints, increaseRequiredExperience, updateExperiencePoints, increaseLevel } from './redux_actions';
+
+function RecipeComponent(props) {
     const [showDetails, setShowDetails] = React.useState(false);
     const [deletedState, setDeletedState] = React.useState(false);
 
@@ -15,6 +18,24 @@ export default function RecipeComponent(props) {
             console.log(error);
         }
     };
+
+    const handleCook = () => {
+        props.increaseExperiencePoints(20);
+    }
+
+    useEffect(() => {
+        setDeletedState(false);
+    }, [deletedState]);
+
+    useEffect(() => {
+        if (props.experiencePoints >= props.requiredExperiencePoints) {
+            props.increaseLevel(1);
+            props.increaseRequiredExperience(1.2);
+            const updatedExperiencePoints = props.experiencePoints - props.requiredExperiencePoints;
+            props.updateExperiencePoints(updatedExperiencePoints);
+            
+        }
+    }, [props.experiencePoints, props.requiredExperiencePoints]);
 
     return (
         <Pressable onPress={() => setShowDetails(!showDetails)}>
@@ -35,17 +56,34 @@ export default function RecipeComponent(props) {
                         <BreakLine/>
                         <Text style={styles.sub_title}>Recipe:</Text>
                         <Text>{props.recipe_text}</Text>
+                        <BreakLine/>
+                        <Button
+                            title='Cook'
+                            onPress = {handleCook}
+                        />
                     </View>
                 )}
             </View>
         </Pressable>
     );
-
-    useEffect(() => {
-        RecipeComponent();
-        setDeletedState(false);
-    }, [deletedState]);
 };
+
+const mapStateToProps = (state) => {
+    return {
+        experiencePoints: state.exp.experiencePoints,
+        requiredExperiencePoints: state.requiredExp.requiredExperiencePoints,
+        currentLevel: state.level.currentLevel
+    };
+};
+
+const mapDispatchToProps = {
+    increaseExperiencePoints,
+    increaseRequiredExperience,
+    updateExperiencePoints,
+    increaseLevel
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(RecipeComponent);
 
 const styles = StyleSheet.create({
     container: {

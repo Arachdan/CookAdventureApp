@@ -1,21 +1,18 @@
-import React from 'react';
+import React, { use } from 'react';
 import { StyleSheet, View, TextInput, Text } from 'react-native';
 import BreakLine from './BreakLine';
 import ProgressBar from 'react-native-progress/Bar';
 import { connect } from 'react-redux';
-
-function increaseExperiencePoints(num) {
-    return {
-        type: 'INCREASE_EXPERIENCE_POINTS',
-        data: num,
-    };
-}
+import { useEffect } from 'react';
+import { resetExperiencePoints } from './redux_actions';
 
 function CharacterProfile(props) {
     const [name, setName] = React.useState('Brave Cooking Adventurer');
-    const [level, setLevel] = React.useState(1);
-    const [requiredExperience, setRequiredExperience] = React.useState(100);
-    const [progress, setProgress] = React.useState(props.experiencePoints / requiredExperience);
+    const [progress, setProgress] = React.useState(0);
+
+    useEffect(() => {
+        setProgress(props.experiencePoints / props.requiredExperiencePoints);
+    }, [props.experiencePoints, props.requiredExperiencePoints]);
 
     return (
         <View style={styles.container}>
@@ -25,8 +22,8 @@ function CharacterProfile(props) {
             <Text>{name}</Text>
             <BreakLine/>
             <Text>CHARACTER'S LEVEL</Text>
-            <Text>Level {level}</Text>
-            <Text>Experience Points: {props.experiencePoints} / {requiredExperience}</Text>
+            <Text>Level {props.currentLevel}</Text>
+            <Text>Experience Points: {props.experiencePoints} / {props.requiredExperiencePoints}</Text>
             {
                 //Experiment with animation type of a progress bar. Just for fun (and learning).
             }
@@ -35,9 +32,11 @@ function CharacterProfile(props) {
     );
 }
 
-export const mapStateToProps = (state) => {
+const mapStateToProps = (state) => {
     return {
-        experiencePoints: state.experiencePoints,
+        experiencePoints: state.exp.experiencePoints,
+        requiredExperiencePoints: state.requiredExp.requiredExperiencePoints,
+        currentLevel: state.level.currentLevel
     };
 };
 

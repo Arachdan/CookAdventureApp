@@ -8,29 +8,70 @@ import CharacterProfile from './CharacterProfile';
 import { NavigationContainer } from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 
-import { createStore } from 'redux';
+import { combineReducers, createStore } from 'redux';
 import { Provider } from 'react-redux';
 
 const Stack = createNativeStackNavigator();
 
 export default function App() {
-  const initialExperiencePointsState = {
-    experiencePoints: 20
+  const initialExpState = {
+    experiencePoints: 0
+  }
+  const initialRequiredExpState = {
+    requiredExperiencePoints: 100
+  }
+  const initialLevelState = {
+    currentLevel: 1
   }
   
-  function reducer(state = initialExperiencePointsState, action) {
+  function expReducer(state = initialExpState, action) {
     switch (action.type) {
         case 'INCREASE_EXPERIENCE_POINTS':
             return {
                 ...state,
-                experiencePoints: state.experiencePoints + action.payload,
+                experiencePoints: state.experiencePoints + action.data
+            };
+        case 'UPDATE_EXPERIENCE_POINTS':
+            return {
+                ...state,
+                experiencePoints: action.data
             };
         default:
             return state;
     }
   }
+
+  function requiredExpReducer(state = initialRequiredExpState, action) {
+    switch (action.type) {
+      case 'INCREASE_REQUIRED_EXPERIENCE':
+        return {
+          ...state,
+          requiredExperiencePoints: Math.round(state.requiredExperiencePoints * action.data / 10) * 10
+        }
+      default:
+        return state;
+    }
+  }
+
+  function levelReducer(state = initialLevelState, action) {
+    switch (action.type) {
+      case 'INCREASE_LEVEL':
+        return {
+          ...state,
+          currentLevel: state.currentLevel + action.data
+        }
+      default:
+        return state;
+    }
+  }
+
+  const rootReducer = combineReducers({
+    exp: expReducer,
+    requiredExp: requiredExpReducer,
+    level: levelReducer
+  })
   
-  const store = createStore(reducer);
+  const store = createStore(rootReducer);
 
   return (
     <Provider store={store}>
