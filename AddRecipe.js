@@ -2,9 +2,14 @@ import { StyleSheet, View, Button, TextInput, Alert } from 'react-native';
 
 import React from 'react';
 
+import { useEffect } from 'react';
+
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-export default function AddRecipe( {navigation} ) {
+import { connect } from 'react-redux';
+import {increaseExperiencePoints, increaseRequiredExperience, updateExperiencePoints, increaseLevel } from './redux_actions';
+
+function AddRecipe(props) {
     const [titleText, setTitleText] = React.useState('');
     const [ingredientsText, setIngredientsText] = React.useState('');
     const [recipeText, setRecipeText] = React.useState('');
@@ -23,14 +28,25 @@ export default function AddRecipe( {navigation} ) {
             Alert.alert('New recipe!', 'Congrats! You\'ve added a brand new recipe to your repertoire. All that\'s left is to give it a try!', [{
                 text: 'Okay',
                 onPress: () => {
-                    navigation.goBack();
+                    props.navigation.goBack();
                 }
             }]);
         } catch (error) {
             console.log(error);
         }
+        props.increaseExperiencePoints(10);
         console.log('Saving: Done.')
     }
+
+    useEffect(() => {
+        if (props.experiencePoints >= props.requiredExperiencePoints) {
+            props.increaseLevel(1);
+            props.increaseRequiredExperience(1.2);
+            const updatedExperiencePoints = props.experiencePoints - props.requiredExperiencePoints;
+            props.updateExperiencePoints(updatedExperiencePoints);
+            
+        }
+    }, [props.experiencePoints, props.requiredExperiencePoints]);
 
     return (
         <View style = {styles.container}>
@@ -61,6 +77,23 @@ export default function AddRecipe( {navigation} ) {
         </View>
     );
 }
+
+const mapStateToProps = (state) => {
+    return {
+        experiencePoints: state.exp.experiencePoints,
+        requiredExperiencePoints: state.requiredExp.requiredExperiencePoints,
+        currentLevel: state.level.currentLevel
+    };
+};
+
+const mapDispatchToProps = {
+    increaseExperiencePoints,
+    increaseRequiredExperience,
+    updateExperiencePoints,
+    increaseLevel
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(AddRecipe);
 
 const styles = StyleSheet.create({
     container: {
