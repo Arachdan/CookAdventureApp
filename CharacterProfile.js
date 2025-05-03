@@ -1,18 +1,28 @@
 import React, { use } from 'react';
-import { StyleSheet, View, TextInput, Text } from 'react-native';
+import { StyleSheet, View, TextInput, Text, Button } from 'react-native';
 import BreakLine from './BreakLine';
 import ProgressBar from 'react-native-progress/Bar';
 import { connect } from 'react-redux';
 import { useEffect } from 'react';
-import { resetExperiencePoints } from './redux_actions';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 function CharacterProfile(props) {
     const [name, setName] = React.useState('Brave Cooking Adventurer');
-    const [progress, setProgress] = React.useState(0);
+    const [progress, setProgress] = React.useState(0);;
 
     useEffect(() => {
         setProgress(props.experiencePoints / props.requiredExperiencePoints);
     }, [props.experiencePoints, props.requiredExperiencePoints]);
+
+    const onRestartCharacterValues = async () => {
+        try {
+            await AsyncStorage.removeItem('experiencePoints');
+            await AsyncStorage.removeItem('requiredExperiencePoints');
+            await AsyncStorage.removeItem('currentLevel');
+        } catch (error) {
+            console.log(error);
+        }
+    }
 
     return (
         <View style={styles.container}>
@@ -28,6 +38,12 @@ function CharacterProfile(props) {
                 //Experiment with animation type of a progress bar. Just for fun (and learning).
             }
             <ProgressBar progress={progress} width={200}/>
+            <BreakLine/>
+            <Text>Feature during tests</Text>
+            <Button
+                title = 'Restart character values'
+                onPress = { onRestartCharacterValues }
+            />
         </View>
     );
 }

@@ -11,27 +11,58 @@ import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import { combineReducers, createStore } from 'redux';
 import { Provider } from 'react-redux';
 
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
 const Stack = createNativeStackNavigator();
 
 export default function App() {
-  const initialExpState = {
-    experiencePoints: 0
-  }
-  const initialRequiredExpState = {
-    requiredExperiencePoints: 100
-  }
-  const initialLevelState = {
-    currentLevel: 1
-  }
+  const saveStats = async (stat, value) => {
+    try {
+      const passedValue = JSON.stringify(value);
+      await AsyncStorage.setItem(stat, passedValue);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  const getSavedStats = async (value) => {
+    try {
+        const readValue = await AsyncStorage.getItem(value);
+        const parsedValue = JSON.parse(readValue);
+        if (parsedValue !== null) {
+            return parsedValue;
+        }
+        else return null;
+    } catch (error) {
+      console.log(error);
+    }
+  };
   
-  function expReducer(state = initialExpState, action) {
+  const initialState = {
+    experiencePoints: 0,
+    requiredExperiencePoints: 0,
+    currentLevel: 0
+  }
+  const setInitialStateValues = async () => {
+    const exp = await getSavedStats('experiencePoints');
+    const requiredExp = await getSavedStats('requiredExperiencePoints');
+    const level = await getSavedStats('currentLevel');
+
+    initialState.experiencePoints = exp ? exp : 0;
+    initialState.requiredExperiencePoints = requiredExp ? requiredExp : 100;
+    initialState.currentLevel = level ? level : 1;
+  }
+  setInitialStateValues();
+  
+  function expReducer(state = initialState, action) {
     switch (action.type) {
         case 'INCREASE_EXPERIENCE_POINTS':
+            saveStats('experiencePoints', state.experiencePoints + action.data);
             return {
                 ...state,
                 experiencePoints: state.experiencePoints + action.data
             };
         case 'UPDATE_EXPERIENCE_POINTS':
+            saveStats('experiencePoints', action.data);
             return {
                 ...state,
                 experiencePoints: action.data
@@ -41,9 +72,10 @@ export default function App() {
     }
   }
 
-  function requiredExpReducer(state = initialRequiredExpState, action) {
+  function requiredExpReducer(state = initialState, action) {
     switch (action.type) {
       case 'INCREASE_REQUIRED_EXPERIENCE':
+        saveStats('requiredExperiencePoints', Math.round(state.requiredExperiencePoints * action.data / 10) * 10);
         return {
           ...state,
           requiredExperiencePoints: Math.round(state.requiredExperiencePoints * action.data / 10) * 10
@@ -53,9 +85,10 @@ export default function App() {
     }
   }
 
-  function levelReducer(state = initialLevelState, action) {
+  function levelReducer(state = initialState, action) {
     switch (action.type) {
       case 'INCREASE_LEVEL':
+        saveStats('currentLevel', state.currentLevel + action.data);
         return {
           ...state,
           currentLevel: state.currentLevel + action.data
