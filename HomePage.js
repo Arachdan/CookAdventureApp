@@ -1,51 +1,31 @@
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, View, Button } from 'react-native';
+import { View, Pressable, Text } from 'react-native';
 
-import React from 'react';
+import styles from './styles';
 
 import BreakLine from './BreakLine';
+
+import CharacterProfile from './CharacterProfile';
 
 export default function HomePage( {navigation} ) {
     return (
         <View style={styles.container}>
-          <Button
-            title="Character Profile"
-            onPress={() =>
-              navigation.navigate("CharacterProfile")
-            }
-          />
+          <CharacterProfile/>
           <BreakLine/>
-          <Button
-            title="Add a recipe"
-            onPress={() =>
-              navigation.navigate("AddRecipe")
-            }
-          />
+          <Pressable
+            onPress={() => navigation.navigate("AddRecipe")}
+            style = {styles.button}
+          >
+            <Text style={styles.button_text}>ADD A RECIPE</Text>
+          </Pressable>
           <BreakLine/>
-          <Button
-            title="Check recipes"
-            onPress={() => 
-              navigation.navigate("CheckRecipes")
-            }
-          />
+          <Pressable
+            onPress={() => navigation.navigate("CheckRecipes")}
+            style = {styles.button}
+          >
+            <Text style={styles.button_text}>CHECK RECIPES</Text>
+          </Pressable>
           <StatusBar/>
         </View>
     );
 }
-
-const styles = StyleSheet.create({
-    container: {
-      flex: 1,
-      backgroundColor: '#fff',
-      alignItems: 'center',
-      justifyContent: 'center',
-    },
-    input: {
-      width: 100,
-      height: 40,
-      margin: 12,
-      borderWidth: 1,
-      padding: 10,
-    }
-  });
-  

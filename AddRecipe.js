@@ -1,4 +1,4 @@
-import { StyleSheet, View, Button, TextInput, Alert } from 'react-native';
+import { View, Button, TextInput, Alert, Pressable, Text } from 'react-native';
 
 import React from 'react';
 
@@ -9,10 +9,31 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { connect } from 'react-redux';
 import {increaseExperiencePoints, increaseRequiredExperience, updateExperiencePoints, increaseLevel } from './redux_actions';
 
+import styles from './styles';
+
+import { useFocusEffect } from '@react-navigation/native';
+import { BackHandler } from 'react-native';
+
 function AddRecipe(props) {
     const [titleText, setTitleText] = React.useState('');
     const [ingredientsText, setIngredientsText] = React.useState('');
     const [recipeText, setRecipeText] = React.useState('');
+
+    useFocusEffect(
+        React.useCallback(() => {
+        const onBackPress = () => {
+            props.navigation.navigate('Home');
+            return true;
+        };
+
+        const subscription = BackHandler.addEventListener(
+            'hardwareBackPress',
+            onBackPress
+        );
+
+        return () => subscription.remove();
+        }, [])
+    );
 
     const saveNewRecipe = async (inputed_title, inputed_ingredients, inputed_recipe_text) => {
         try {
@@ -49,32 +70,37 @@ function AddRecipe(props) {
     }, [props.experiencePoints, props.requiredExperiencePoints]);
 
     return (
-        <View style = {styles.container}>
-            <TextInput
-                style = {styles.input_one}
-                placeholder = "Title"
-                value = {titleText}
-                onChangeText = {setTitleText}
-            />
-            <TextInput
-                style = {styles.input_two}
-                placeholder = "Ingredients"
-                multiline = {true}
-                value = {ingredientsText}
-                onChangeText = {setIngredientsText}
-            />
-            <TextInput
-                style = {styles.input_three}
-                placeholder = "Recipe"
-                multiline = {true}
-                value = {recipeText}
-                onChangeText = {setRecipeText}
-            />
-            <Button
-                title="Save recipe"
-                onPress={() => saveNewRecipe(titleText, ingredientsText, recipeText)}
-            />
-        </View>
+            <View style = {styles.form_container}>
+                <TextInput
+                    style = {styles.input_one}
+                    placeholder = "Title"
+                    value = {titleText}
+                    onChangeText = {setTitleText}
+                    placeholderTextColor={'#63C7C7'}
+                />
+                <TextInput
+                    style = {styles.input_two}
+                    placeholder = "Ingredients"
+                    multiline = {true}
+                    value = {ingredientsText}
+                    onChangeText = {setIngredientsText}
+                    placeholderTextColor={'#63C7C7'}
+                />
+                <TextInput
+                    style = {styles.input_three}
+                    placeholder = "Recipe"
+                    multiline = {true}
+                    value = {recipeText}
+                    onChangeText = {setRecipeText}
+                    placeholderTextColor={'#63C7C7'}
+                />
+                <Pressable
+                    onPress={() => saveNewRecipe(titleText, ingredientsText, recipeText)}
+                    style = {[styles.button, styles.save_recipe_button]}
+                >
+                    <Text style={styles.button_text}>Save recipe</Text>
+                </Pressable>
+            </View>
     );
 }
 
@@ -94,30 +120,3 @@ const mapDispatchToProps = {
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(AddRecipe);
-
-const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        backgroundColor: '#fff',
-    },
-    input_one: {
-        height: 40,
-        margin: 12,
-        borderWidth: 1,
-        padding: 10,
-    },
-    input_two: {
-        height: 100,
-        margin: 12,
-        borderWidth: 1,
-        padding: 10,
-        textAlignVertical: 'top'
-    },
-    input_three: {
-        flex: 1,
-        margin: 12,
-        borderWidth: 1,
-        padding: 10,
-        textAlignVertical: 'top'
-    }
-});

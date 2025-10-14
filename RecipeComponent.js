@@ -1,11 +1,13 @@
-import { StyleSheet, View, Text, Pressable, Button } from 'react-native';
+import { View, Text, Pressable, Button } from 'react-native';
 
 import React, { useEffect } from 'react';
 
 import BreakLine from './BreakLine';
 
 import { connect } from 'react-redux';
-import {increaseExperiencePoints, increaseRequiredExperience, updateExperiencePoints, increaseLevel } from './redux_actions';
+import { handleExperienceAndLeveling } from './redux_actions';
+
+import styles from './styles';
 
 function RecipeComponent(props) {
     const [showDetails, setShowDetails] = React.useState(false);
@@ -20,34 +22,24 @@ function RecipeComponent(props) {
     };
 
     const handleCook = () => {
-        props.increaseExperiencePoints(20);
+        props.handleExperienceAndLeveling();
     }
 
     useEffect(() => {
         setDeletedState(false);
     }, [deletedState]);
-
-    useEffect(() => {
-        if (props.experiencePoints >= props.requiredExperiencePoints) {
-            props.increaseLevel(1);
-            props.increaseRequiredExperience(1.2);
-            const updatedExperiencePoints = props.experiencePoints - props.requiredExperiencePoints;
-            props.updateExperiencePoints(updatedExperiencePoints);
-            
-        }
-    }, [props.experiencePoints, props.requiredExperiencePoints]);
-
+    
     return (
         <Pressable onPress={() => setShowDetails(!showDetails)}>
-            <View style={styles.container}>
-                <Text>
-                    {props.title}
-                    <Button
-                        style = {styles.delete_button}
-                        title = "X"
-                        onPress = {handleDelete}
-                    />
-                </Text>
+            <View style={styles.recipe}>
+                <View style={styles.titleSection}>
+                    <Text>{props.title}</Text>
+                    <Pressable
+                        style = {styles.delete_button_container}
+                        onPress = {handleDelete}>
+                        <Text style={styles.delete_button}>X</Text>
+                    </Pressable>
+                </View>
                 {showDetails && (
                     <View>
                         <BreakLine/>
@@ -57,10 +49,15 @@ function RecipeComponent(props) {
                         <Text style={styles.sub_title}>Recipe:</Text>
                         <Text>{props.recipe_text}</Text>
                         <BreakLine/>
-                        <Button
-                            title='Cook'
+                        <Pressable
                             onPress = {handleCook}
-                        />
+                            style = {[
+                                styles.button,
+                                styles.cook_button
+                            ]}
+                        >
+                            <Text style={styles.button_text}>Cook</Text>
+                        </Pressable>
                     </View>
                 )}
             </View>
@@ -70,38 +67,14 @@ function RecipeComponent(props) {
 
 const mapStateToProps = (state) => {
     return {
-        experiencePoints: state.exp.experiencePoints,
-        requiredExperiencePoints: state.requiredExp.requiredExperiencePoints,
-        currentLevel: state.level.currentLevel
+        experiencePoints: state.exp,
+        requiredExperiencePoints: state.requiredExp,
+        currentLevel: state.level
     };
 };
 
 const mapDispatchToProps = {
-    increaseExperiencePoints,
-    increaseRequiredExperience,
-    updateExperiencePoints,
-    increaseLevel
+    handleExperienceAndLeveling
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(RecipeComponent);
-
-const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        backgroundColor: '#fff',
-        borderWidth: 1,
-        borderColor: 'blue',
-        backgroundColor: '#EDAEC0',
-        margin: 5,
-        padding: 3,
-        minHeight: 50
-    },
-    title: {
-    },
-    sub_title: {
-        fontWeight: 'bold'
-    },
-    delete_button: {
-        // Style that.
-    }
-});
