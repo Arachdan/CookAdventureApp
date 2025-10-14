@@ -1,4 +1,4 @@
-import { StyleSheet, ScrollView } from 'react-native';
+import { FlatList, ScrollView } from 'react-native';
 
 import React, { useEffect } from 'react';
 
@@ -6,32 +6,31 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import RecipeComponent from './RecipeComponent';
 
-/*
-    What to do:
-    Add a way to delete a saved recipe from a list of saved recipes and from AsyncStorage.
-*/
+import styles from './styles';
+
+import { BackHandler } from 'react-native';
+import { useFocusEffect } from '@react-navigation/native';
 
 export default function CheckRecipes( {navigation} ) {
+    useFocusEffect(
+        React.useCallback(() => {
+        const onBackPress = () => {
+            navigation.navigate('Home');
+            return true;
+        };
+
+        const subscription = BackHandler.addEventListener(
+            'hardwareBackPress',
+            onBackPress
+        );
+
+        return () => subscription.remove();
+        }, [])
+    );
+
     const [recipes, setRecipes] = React.useState([]);
 
     useEffect(() => {
-        /*
-        const getMyRecipe = async (key) => {
-            try {
-                const JSONval = await AsyncStorage.getItem(key);
-                const val = JSON.parse(JSONval);
-                
-                setRecipeTitle(val.title);
-                setRecipeIngredients(val.ingredients);
-                setRecipeText(val.recipe_text);
-            } catch (error) {
-                console.log(error);
-            }
-    
-            console.log('Reading: Done.');
-        }
-        */
-
         const getAllRecipes = async () => {
             try {
                 const val = await AsyncStorage.getItem('recipes');
@@ -61,22 +60,12 @@ export default function CheckRecipes( {navigation} ) {
     };
 
     return (
-        <ScrollView>
-            {recipes.map((recipe, index) => (
-                <RecipeComponent key={index} {...recipe} onDelete={deleteRecipe}/>
-            ))}
-        </ScrollView>
+        <FlatList
+            style = {styles.recipes_container}
+            data = {recipes}
+            renderItem={({item}) => <RecipeComponent {...item} onDelete={deleteRecipe}/>}
+            keyExtractor={(item, index) => index.toString()}
+            contentContainerStyle = {styles.recipes_flatlist}
+        />
     );
 }
-
-const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        backgroundColor: '#fff',
-        borderWidth: 1,
-        borderColor: 'blue',
-        backgroundColor: '#EDAEC0',
-        margin: 5,
-        padding: 3
-    }
-});

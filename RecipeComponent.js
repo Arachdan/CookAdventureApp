@@ -1,10 +1,15 @@
-import { StyleSheet, View, Text, Pressable, Button } from 'react-native';
+import { View, Text, Pressable, Button } from 'react-native';
 
 import React, { useEffect } from 'react';
 
 import BreakLine from './BreakLine';
 
-export default function RecipeComponent(props) {
+import { connect } from 'react-redux';
+import { handleExperienceAndLeveling } from './redux_actions';
+
+import styles from './styles';
+
+function RecipeComponent(props) {
     const [showDetails, setShowDetails] = React.useState(false);
     const [deletedState, setDeletedState] = React.useState(false);
 
@@ -16,17 +21,25 @@ export default function RecipeComponent(props) {
         }
     };
 
+    const handleCook = () => {
+        props.handleExperienceAndLeveling();
+    }
+
+    useEffect(() => {
+        setDeletedState(false);
+    }, [deletedState]);
+    
     return (
         <Pressable onPress={() => setShowDetails(!showDetails)}>
-            <View style={styles.container}>
-                <Text>
-                    {props.title}
-                    <Button
-                        style = {styles.delete_button}
-                        title = "X"
-                        onPress = {handleDelete}
-                    />
-                </Text>
+            <View style={styles.recipe}>
+                <View style={styles.titleSection}>
+                    <Text>{props.title}</Text>
+                    <Pressable
+                        style = {styles.delete_button_container}
+                        onPress = {handleDelete}>
+                        <Text style={styles.delete_button}>X</Text>
+                    </Pressable>
+                </View>
                 {showDetails && (
                     <View>
                         <BreakLine/>
@@ -35,35 +48,33 @@ export default function RecipeComponent(props) {
                         <BreakLine/>
                         <Text style={styles.sub_title}>Recipe:</Text>
                         <Text>{props.recipe_text}</Text>
+                        <BreakLine/>
+                        <Pressable
+                            onPress = {handleCook}
+                            style = {[
+                                styles.button,
+                                styles.cook_button
+                            ]}
+                        >
+                            <Text style={styles.button_text}>Cook</Text>
+                        </Pressable>
                     </View>
                 )}
             </View>
         </Pressable>
     );
-
-    useEffect(() => {
-        RecipeComponent();
-        setDeletedState(false);
-    }, [deletedState]);
 };
 
-const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        backgroundColor: '#fff',
-        borderWidth: 1,
-        borderColor: 'blue',
-        backgroundColor: '#EDAEC0',
-        margin: 5,
-        padding: 3,
-        minHeight: 50
-    },
-    title: {
-    },
-    sub_title: {
-        fontWeight: 'bold'
-    },
-    delete_button: {
-        // Style that.
-    }
-});
+const mapStateToProps = (state) => {
+    return {
+        experiencePoints: state.exp,
+        requiredExperiencePoints: state.requiredExp,
+        currentLevel: state.level
+    };
+};
+
+const mapDispatchToProps = {
+    handleExperienceAndLeveling
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(RecipeComponent);
